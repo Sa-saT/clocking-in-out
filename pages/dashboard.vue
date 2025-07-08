@@ -1,32 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
-    <!-- ヘッダー -->
-    <header class="bg-white dark:bg-gray-800 shadow">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-          <div class="flex items-center">
-            <h1 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
-              出退勤管理システム
-            </h1>
-          </div>
-          <div class="flex items-center space-x-4">
-            <span class="text-sm text-gray-700 dark:text-gray-200">
-              ようこそ、{{ authStore.user?.name || authStore.user?.email }}さん
-            </span>
-            <button
-              @click="handleLogout"
-              class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-400"
-              aria-label="ログアウト"
-            >
-              <span class="sr-only">ログアウト</span>
-              ログアウト
-            </button>
-          </div>
-        </div>
-      </div>
-    </header>
-
-    <!-- メインコンテンツ -->
+    <!-- ヘッダー（削除済み） -->
     <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
       <div class="px-4 py-6 sm:px-0">
         <!-- 現在の状態表示 -->
@@ -92,11 +66,26 @@
           </div>
         </div>
 
-        <!-- 履歴表示 -->
+        <!-- 打刻履歴（最新1件＋今月分トグル） -->
         <div class="mt-6 bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
           <div class="px-4 py-5 sm:p-6">
-            <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100 mb-4">
+            <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100 mb-4 flex items-center">
               打刻履歴
+              <ArrowDownButton @click="toggleShowMonth" ariaLabel="今月の履歴を表示" />
+              <button @click="toggleShowPrev" class="ml-2 p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none" aria-label="先月以降の履歴">
+                <span class="inline-block">
+                  <svg class="w-6 h-6 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <!-- 外枠 -->
+                    <circle cx="12" cy="13" r="7" stroke="currentColor" stroke-width="2.5" fill="none"/>
+                    <!-- つまみ -->
+                    <rect x="10.5" y="3" width="3" height="2" rx="1" fill="currentColor"/>
+                    <!-- 針（短針） -->
+                    <line x1="12" y1="13" x2="12" y2="8.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <!-- 針（長針） -->
+                    <line x1="12" y1="13" x2="16" y2="13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
+                </span>
+              </button>
             </h3>
             <template v-if="pending">
               <p class="text-sm text-gray-500 dark:text-gray-300">読み込み中...</p>
@@ -104,31 +93,102 @@
             <template v-else-if="error">
               <p class="text-sm text-red-500" role="alert" aria-live="assertive" tabindex="0">履歴の取得に失敗しました</p>
             </template>
-            <template v-else-if="clocks && clocks.length">
-              <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700" aria-label="打刻履歴">
+            <template v-else>
+              <!-- 最新1件のみ表示 -->
+              <div v-if="latestClock">
+                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700" aria-label="最新打刻履歴">
                   <thead>
                     <tr>
-                      <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" tabindex="0" aria-label="日付">日付</th>
-                      <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" tabindex="0" aria-label="出勤時刻">出勤時刻</th>
-                      <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" tabindex="0" aria-label="退勤時刻">退勤時刻</th>
+                      <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">日付</th>
+                      <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">出勤時刻</th>
+                      <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">退勤時刻</th>
                     </tr>
                   </thead>
-                  <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-100 dark:divide-gray-800">
-                    <tr v-for="clock in clocks" :key="clock.id" class="hover:bg-indigo-50 dark:hover:bg-indigo-900 focus-within:bg-indigo-100 dark:focus-within:bg-indigo-800 transition-colors">
-                      <td class="px-4 py-2 whitespace-nowrap">{{ formatDate(clock.clockIn) }}</td>
-                      <td class="px-4 py-2 whitespace-nowrap">{{ formatTime(clock.clockIn) }}</td>
+                  <tbody>
+                    <tr>
+                      <td class="px-4 py-2 whitespace-nowrap">{{ formatDate(latestClock.clockIn) }}</td>
+                      <td class="px-4 py-2 whitespace-nowrap">{{ formatTime(latestClock.clockIn) }}</td>
                       <td class="px-4 py-2 whitespace-nowrap">
-                        <span v-if="clock.clockOut">{{ formatTime(clock.clockOut) }}</span>
-                        <span v-else class="text-red-500 font-semibold" aria-label="未退勤" role="status" aria-live="polite">未退勤</span>
+                        <span v-if="latestClock.clockOut">{{ formatTime(latestClock.clockOut) }}</span>
+                        <span v-else class="text-red-500 font-semibold">未退勤</span>
                       </td>
                     </tr>
                   </tbody>
                 </table>
               </div>
-            </template>
-            <template v-else>
-              <p class="text-sm text-gray-500 dark:text-gray-300">履歴がありません</p>
+              <p v-else class="text-sm text-gray-500 dark:text-gray-300">履歴がありません</p>
+
+              <!-- 先月以降の履歴 月リスト -->
+              <transition name="fade">
+                <div v-if="showPrev" class="mt-4">
+                  <div class="flex items-center mb-2">
+                    <span class="font-semibold text-gray-700 dark:text-gray-200">月を選択してください</span>
+                    <BackButton @click="closePrev" ariaLabel="戻る" />
+                  </div>
+                  <ul v-if="previousMonths.length" class="flex flex-wrap gap-2">
+                    <li v-for="m in previousMonths" :key="m" class="">
+                      <button @click="selectMonth(m)" class="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded hover:bg-indigo-200 dark:hover:bg-indigo-600 text-sm font-medium focus:outline-none">
+                        {{ m }}
+                      </button>
+                    </li>
+                  </ul>
+                  <p v-else class="text-sm text-gray-500 dark:text-gray-300">打刻履歴はありません</p>
+                </div>
+              </transition>
+              <!-- 選択月の履歴 -->
+              <transition name="fade">
+                <div v-if="selectedMonthClocks.length" class="mt-4">
+                  <div class="flex items-center mb-2">
+                    <BackButton @click="clearSelectedMonth" ariaLabel="戻る" />
+                    <span class="font-semibold text-gray-700 dark:text-gray-200">{{ selectedMonth }}の履歴</span>
+                  </div>
+                  <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700" aria-label="選択月の打刻履歴">
+                    <thead>
+                      <tr>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">日付</th>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">出勤時刻</th>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">退勤時刻</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="clock in selectedMonthClocks" :key="clock.id">
+                        <td class="px-4 py-2 whitespace-nowrap">{{ formatDate(clock.clockIn) }}</td>
+                        <td class="px-4 py-2 whitespace-nowrap">{{ formatTime(clock.clockIn) }}</td>
+                        <td class="px-4 py-2 whitespace-nowrap">
+                          <span v-if="clock.clockOut">{{ formatTime(clock.clockOut) }}</span>
+                          <span v-else class="text-red-500 font-semibold">未退勤</span>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </transition>
+
+              <!-- 今月分の履歴（トグル表示） -->
+              <transition name="fade">
+                <div v-if="showMonth" class="mt-4">
+                  <table v-if="monthlyClocks.length" class="min-w-full divide-y divide-gray-200 dark:divide-gray-700" aria-label="今月の打刻履歴">
+                    <thead>
+                      <tr>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">日付</th>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">出勤時刻</th>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">退勤時刻</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="clock in monthlyClocks" :key="clock.id">
+                        <td class="px-4 py-2 whitespace-nowrap">{{ formatDate(clock.clockIn) }}</td>
+                        <td class="px-4 py-2 whitespace-nowrap">{{ formatTime(clock.clockIn) }}</td>
+                        <td class="px-4 py-2 whitespace-nowrap">
+                          <span v-if="clock.clockOut">{{ formatTime(clock.clockOut) }}</span>
+                          <span v-else class="text-red-500 font-semibold">未退勤</span>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <p v-else class="text-sm text-gray-500 dark:text-gray-300">今月の履歴はありません</p>
+                </div>
+              </transition>
             </template>
           </div>
         </div>
@@ -139,6 +199,9 @@
 
 <script setup lang="ts">
 import { useApi } from '@/composables/useApi'
+import BackButton from '@/components/icon/BackButton.vue'
+import ArrowDownButton from '@/components/icon/ArrowDownButton.vue'
+import ArrowUpButton from '@/components/icon/ArrowUpButton.vue'
 
 const authStore = useAuthStore()
 const router = useRouter()
@@ -153,10 +216,6 @@ const updateTime = () => {
   currentTime.value = now.toLocaleTimeString('ja-JP')
   currentDate.value = now.toLocaleDateString('ja-JP')
 }
-
-const currentStatus = computed(() => {
-  return isClockedIn.value ? '出勤中' : '未出勤'
-})
 
 const { fetchWithSSR, fetch } = useApi()
 const userId = computed(() => authStore.user?.id)
@@ -231,5 +290,65 @@ function formatDate(dateStr: string) {
 function formatTime(dateStr: string) {
   const d = new Date(dateStr)
   return d.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' })
+}
+
+const currentStatus = computed(() => {
+  // 今日の打刻履歴を取得
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const todayClock = clocks.value.find((c: any) => {
+    const d = new Date(c.clockIn)
+    d.setHours(0, 0, 0, 0)
+    return d.getTime() === today.getTime()
+  })
+  if (!todayClock) {
+    return '未出勤'
+  } else if (todayClock && !todayClock.clockOut) {
+    return '出勤中'
+  } else if (todayClock && todayClock.clockOut) {
+    return '本日退勤'
+  }
+  return '未出勤'
+})
+
+const showMonth = ref(false)
+const showPrev = ref(false)
+const selectedMonth = ref('')
+const selectedMonthClocks = ref<any[]>([])
+const toggleShowMonth = () => { showMonth.value = !showMonth.value }
+const toggleShowPrev = () => { showPrev.value = !showPrev.value; selectedMonth.value = ''; selectedMonthClocks.value = [] }
+const closePrev = () => { showPrev.value = false; selectedMonth.value = ''; selectedMonthClocks.value = [] }
+const selectMonth = (m: string) => {
+  selectedMonth.value = m
+  selectedMonthClocks.value = clocks.value.filter((c: any) => formatMonth(c.clockIn) === m)
+}
+const clearSelectedMonth = () => { selectedMonth.value = ''; selectedMonthClocks.value = [] }
+
+// 最新1件
+const latestClock = computed(() => {
+  if (!clocks.value || !clocks.value.length) return null
+  return [...clocks.value].sort((a, b) => new Date(b.clockIn).getTime() - new Date(a.clockIn).getTime())[0]
+})
+// 今月分
+const monthlyClocks = computed(() => {
+  const now = new Date()
+  const ym = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+  return clocks.value.filter((c: any) => {
+    const d = new Date(c.clockIn)
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}` === ym
+  })
+})
+// 先月以降の履歴がある月リスト（今月以外）
+const previousMonths = computed(() => {
+  const now = new Date()
+  const ymNow = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+  const months = clocks.value
+    .map((c: any) => formatMonth(c.clockIn))
+    .filter((m: string) => m !== ymNow)
+  return Array.from(new Set(months) as Set<string>).sort().reverse()
+})
+function formatMonth(dateStr: string) {
+  const d = new Date(dateStr)
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
 }
 </script> 
