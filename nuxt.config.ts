@@ -1,0 +1,27 @@
+// https://nuxt.com/docs/api/configuration/nuxt-config
+import tailwindcss from "@tailwindcss/vite";
+
+export default defineNuxtConfig({
+  compatibilityDate: '2025-05-15',
+  devtools: {
+    enabled: true
+  },
+  runtimeConfig:{
+    DATABASE_URL:process.env.DATABASE_URL,
+  },
+  modules: [
+    '@pinia/nuxt',
+    '@nuxt/fonts',
+    '@nuxt/icon',
+    '@nuxt/image',
+    '@nuxt/test-utils',
+    '@prisma/nuxt',
+    // '@nuxtjs/tailwindcss',
+  ],
+  css: ['../assets/css/main.css'],
+  vite: {
+    plugins: [
+      tailwindcss(),
+    ],
+  },
+});

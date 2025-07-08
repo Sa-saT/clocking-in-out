@@ -1,0 +1,211 @@
+nuxt3のみで、back無しで作る。
+backの代わりにnuxtのmidle_directoryとかで使ってこよう。
+mariaDB + Prisma
+
+// Nuxt3 + Prisma + MariaDB/PostgreSQL で作る出退勤アプリ構成まとめ
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+// =========================
+// ✅ 技術スタック
+// =========================
+// - Nuxt3 (フロント＆バック一体)
+// - Prisma (DBアクセス)
+// - PostgreSQL
+// - Tailwind CSS (UIデザイン)
+// - TypeScript
+// - pnpm
+
+// =========================
+// ✅ フォルダ構成（Nuxt3 プロジェクト）
+// =========================
+
+// project-root/
+// ├─ server/
+// │  └─ api/
+// │     ├─ auth/
+// │     │  └─ login.post.ts         // ログイン処理
+// │     └─ clock/
+// │         ├─ checkin.post.ts      // 出勤打刻
+// │         ├─ checkout.post.ts     // 退勤打刻
+// │         └─ logs.get.ts          // 履歴取得
+// ├─ prisma/
+// │  └─ schema.prisma               // DBスキーマ
+// ├─ pages/
+// │  ├─ login.vue                   // ログイン画面
+// │  └─ index.vue                   // メイン画面（出退勤/履歴）
+// ├─ composables/
+// │  └─ useAuth.ts                  // 認証状態管理
+// ├─ components/
+// │  ├─ ClockButton.vue             // 出退勤ボタン
+// │  └─ LogList.vue                 // 履歴表示
+// ├─ middleware/
+// │  └─ auth.global.ts              // 認証チェック
+// └─ nuxt.config.ts
+
+// =========================
+// ✅ Prisma スキーマ（schema.prisma）
+// =========================
+
+model User {
+  id        Int       @id @default(autoincrement())
+  email     String    @unique
+  password  String
+  logs      ClockLog[]
+}
+
+model ClockLog {
+  id        Int       @id @default(autoincrement())
+  date      DateTime
+  checkIn   DateTime?
+  checkOut  DateTime?
+  user      User      @relation(fields: [userId], references: [id])
+  userId    Int
+
+  @@unique([date, userId])
+}
+
+// =========================
+// ✅ 主要タスク
+// =========================
+
+// Done- 1. Nuxt3 プロジェクト作成（pnpm）
+// Done- 2. Tailwind CSS 設定
+// Done- 3. Prisma セットアップ & DB接続
+// Done- 4. DBスキーマ定義 & `prisma migrate dev`
+// 5. ログイン処理作成
+// 6. 認証ミドルウェア作成（global）
+// 7. 出勤・退勤API作成
+// 8. 履歴取得API作成
+// 9. UI作成（打刻・履歴表示）
+// 10. 日付表示調整・赤表示など
+
+// =========================
+// ✅ 実務上のポイント
+// =========================
+// - PrismaはNode.js実行環境でしか動作しないため、Nuxt3のserver/api機能を使ってバックエンドとして動作させる
+// - DBアクセスが必要な限り、バックエンド（=Node.js）は必須
+// - Djangoのような別サーバーは不要（Nuxtで完結可能）
+// - フロントとバックを分けたい場合は、Nuxtをフロント専用にして、NestJSやDjango等を使うのが一般的
+
+// =========================
+// ✅ 今後の展開案
+// =========================
+// - ログインにtoken/session管理
+// - 勤務時間の合計算出
+// - 管理者画面の実装
+// - PDF出力/CSVエクスポート機能など
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+PostgreSQL=======
+User:
+clocking_user
+
+PWD:
+clocking12345
+
+DB:
+clocking_db
+=================
+
+_______________________________________________________
+[06/24火]**********************************************
+[06/25水]**********************************************
+[06/28土]**********************************************
+
+Prisma & Tailwind
+公式の環境構築方法(install)で構築する。
+
+WHO(世界保健機関)
+ジュース(果糖ブドウ糖は最悪)は肝臓にダメージが行く。
+濃縮果汁還元。輸入の為に果物をジュース状にしたもの。堆積を減らす為、繊維質も抜かれている。
+
+米(糖質)を0にすると、便秘になる。
+
+psql -U sasata postgres
+
+-- Prisma用のロール（ユーザー）作成
+CREATE ROLE clocking_user WITH LOGIN PASSWORD 'clocking12345' CREATEDB;
+
+-- データベース作成
+CREATE DATABASE clocking_db OWNER clocking_user;
+
+DATABASE_URL="postgresql://clocking_user:clocking12345@localhost:5432/clocking_db?schema=public"
+
+
+アプリの主な目的・ゴール
+どんなユーザーが、どんな課題を解決するためのアプリですか？
+主要な機能一覧
+例：打刻（出勤/退勤）、ユーザー管理、管理者画面、レポート出力など
+利用する技術・構成
+例：Nuxt3 + Prisma + PostgreSQL + Tailwind CSS など
+画面構成やUIイメージ
+例：ログイン画面、ダッシュボード、打刻ボタン、履歴一覧など
+ユーザー権限やロール
+例：一般ユーザー、管理者、スーパーユーザーなど
+その他、必須要件や希望事項
+例：スマホ対応、CSVエクスポート、外部API連携など
+
+prismaのDBのクリエが足りない。
+DBの見直し。
+
+lib/prisma.tsは、
+PrismaClientのインスタンスをグローバルに1つだけ生成し、
+開発環境でのホットリロード時にも複数生成されないようにするシングルトンパターンを実装しています。
+これにより、Prismaの接続数増加によるエラーを防ぎ、
+安定したDB接続管理が可能になります。 
+
+_______________________________________________________
+[07/02水]**********************************************
+[07/04金]**********************************************
+
+【朝一司令】
+今日もアプリ開発を進めていきましょう！
+1.APP_SPECを確認して
+2.再利用可能な関数をまとめる為、
+・Composable/(useFetch(), useMouse(), useAuth())
+・plugins/
+・Store/(Pinia)
+2.が最適化されているか調べ、
+必要ならばAPP_SPECに記載し、
+実装してください。
+
+soundAPPの方に".cursor","APP_SPEC"にルールを作成して、
+実行していってもらう。
+終了間近だから大丈夫だと思う。
+
+craftsmanship.txt
+>> GPTでこれまでの開発の流れをこのファイルにまとめる。
+
+Three.js
+>> Webに3DモデルをWebGLよりも簡単に載せることが出来るマッパー
+
+水中の泡の作成"blender"が正解！！
+
+_______________________________________________________
+[07/07月]**********************************************
+
+GitHubのレポジトリ作成
+
+
+Header
+・アプリ名
+・ログアウト
+
+Footer
+・下固定
+・社名
+
+Body
+・現在の状態
+  当日の未打刻⇨未出勤
+  出勤打刻⇨出勤中
+  退勤打刻⇨本日退勤
+
+admin
+・メニュー
+  ユーザーの打刻履歴の閲覧画面
+
+clocking-in-out
+
