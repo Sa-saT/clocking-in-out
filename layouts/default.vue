@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen flex flex-col bg-gray-50">
+  <div class="min-h-screen flex flex-col bg-gray-50" style="background-image: url('/background.png'); background-size: cover; background-position: center; background-repeat: no-repeat;">
     <Header />
     <main class="flex-1 container mx-auto px-4 py-6" role="main" tabindex="-1">
       <h1 class="sr-only">出退勤管理アプリ</h1>
@@ -11,10 +11,11 @@
 
 <script setup lang="ts">
 import { useAuthStore } from '@/stores/auth'
-// import { onMounted } from 'vue'
+import { onMounted } from 'vue'
 
 const auth = useAuthStore()
-// onMounted(() => {
-//   auth.restoreUserFromSession()
-// })
+
+onMounted(() => {
+  auth.restoreUserFromSession()
+})
 </script>

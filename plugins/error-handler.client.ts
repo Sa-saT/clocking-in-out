@@ -1,6 +1,5 @@
 export default defineNuxtPlugin((nuxtApp) => {
-  // クライアントサイドでのみ実行
-  if (process.client) {
+  if (typeof window !== 'undefined') {
     // グローバルエラーハンドリング
     nuxtApp.vueApp.config.errorHandler = (error, instance, info) => {
       console.error('Vue Error:', error)

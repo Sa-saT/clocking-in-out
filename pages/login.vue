@@ -1,19 +1,19 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+  <!-- <div class="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col justify-start pt-12 sm:px-6 lg:px-8"> -->
     <div class="sm:mx-auto sm:w-full sm:max-w-md">
-      <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-gray-100">
+      <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
         出退勤管理システム
       </h2>
-      <p class="mt-2 text-center text-sm text-gray-600 dark:text-gray-300">
+      <p class="mt-2 text-center text-sm text-gray-800">
         アカウントにログインしてください
       </p>
     </div>
 
     <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-      <div class="bg-white dark:bg-gray-800 py-8 px-4 shadow sm:rounded-lg sm:px-10">
+      <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
         <form class="space-y-6" @submit.prevent="handleLogin" aria-label="ログインフォーム">
           <div>
-            <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-200">
+            <label for="email" class="block text-sm font-medium text-gray-700">
               メールアドレス
             </label>
             <div class="mt-1">
@@ -24,7 +24,7 @@
                 type="email"
                 autocomplete="email"
                 required
-                class="appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white text-gray-900"
                 placeholder="example@company.com"
                 aria-label="メールアドレス"
               />
@@ -32,7 +32,7 @@
           </div>
 
           <div>
-            <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-200">
+            <label for="password" class="block text-sm font-medium text-gray-700">
               パスワード
             </label>
             <div class="mt-1">
@@ -43,17 +43,17 @@
                 type="password"
                 autocomplete="current-password"
                 required
-                class="appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white text-gray-900"
                 placeholder="パスワードを入力"
                 aria-label="パスワード"
               />
             </div>
           </div>
 
-          <div v-if="authStore.error" class="rounded-md bg-red-50 dark:bg-red-900 p-4">
+          <div v-if="authStore.error" class="rounded-md bg-red-50 p-4">
             <div class="flex">
               <div class="ml-3">
-                <h3 class="text-sm font-medium text-red-800 dark:text-red-200" role="alert" aria-live="assertive">
+                <h3 class="text-sm font-medium text-red-800" role="alert" aria-live="assertive">
                   {{ authStore.error }}
                 </h3>
               </div>
@@ -80,7 +80,7 @@
         </form>
       </div>
     </div>
-  </div>
+  <!-- </div> -->
 </template>
 
 <script setup lang="ts">

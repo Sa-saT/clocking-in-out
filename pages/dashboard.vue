@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+  <!-- <div class="min-h-screen bg-gray-50 dark:bg-gray-900"> -->
     <!-- ヘッダー（削除済み） -->
     <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
       <div class="px-4 py-6 sm:px-0">
@@ -71,17 +71,18 @@
           <div class="px-4 py-5 sm:p-6">
             <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100 mb-4 flex items-center">
               打刻履歴
-              <ArrowDownButton @click="toggleShowMonth" ariaLabel="今月の履歴を表示" />
+              <template v-if="!showMonth">
+                <ArrowDownButton @click="toggleShowMonth" ariaLabel="今月の履歴を表示" />
+              </template>
+              <template v-else>
+                <ArrowUpButton @click="toggleShowMonth" ariaLabel="今月の履歴を非表示" />
+              </template>
               <button @click="toggleShowPrev" class="ml-2 p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none" aria-label="先月以降の履歴">
                 <span class="inline-block">
                   <svg class="w-6 h-6 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <!-- 外枠 -->
                     <circle cx="12" cy="13" r="7" stroke="currentColor" stroke-width="2.5" fill="none"/>
-                    <!-- つまみ -->
                     <rect x="10.5" y="3" width="3" height="2" rx="1" fill="currentColor"/>
-                    <!-- 針（短針） -->
                     <line x1="12" y1="13" x2="12" y2="8.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    <!-- 針（長針） -->
                     <line x1="12" y1="13" x2="16" y2="13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                   </svg>
                 </span>
@@ -194,7 +195,7 @@
         </div>
       </div>
     </main>
-  </div>
+  <!-- </div> -->
 </template>
 
 <script setup lang="ts">
