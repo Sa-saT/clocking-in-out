@@ -71,15 +71,4 @@ declare module 'three' {
     constructor(geometry: BufferGeometry, material: PointsMaterial)
     rotation: { x: number; y: number; z: number }
   }
-}
-
-declare module 'three/examples/jsm/loaders/GLTFLoader.js' {
-  export class GLTFLoader {
-    load(
-      url: string,
-      onLoad: (gltf: any) => void,
-      onProgress?: (progress: any) => void,
-      onError?: (error: any) => void
-    ): void
-  }
 } 
