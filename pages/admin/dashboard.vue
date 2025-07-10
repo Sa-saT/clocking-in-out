@@ -1,82 +1,32 @@
 <template>
   <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
-    <header class="bg-white dark:bg-gray-800 shadow sticky top-0 z-20">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between h-16 items-center">
-        <h1 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
-          管理者ダッシュボード
-        </h1>
-        <!-- ハンバーガーメニュー（モバイル） -->
-        <button class="md:hidden p-2 focus:outline-none" @click="menuOpen = !menuOpen" aria-label="メニュー開閉">
+    <Header>
+      <template #title>管理者ダッシュボード</template>
+      <template #user-info>
+        <span class="hidden md:inline text-sm text-gray-700 dark:text-gray-200">{{ authStore.user?.name || authStore.user?.email }}（管理者）</span>
+      </template>
+      <template #menu-bar>
+        <button class="p-2 ml-2 focus:outline-none" @click="menuOpen = !menuOpen" aria-label="メニュー開閉">
           <span v-if="!menuOpen">
-            <!-- ハンバーガー -->
-            <svg class="w-8 h-8 text-gray-700 dark:text-gray-200" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            
+            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </span>
           <span v-else>
             <!-- X -->
-            <svg class="w-8 h-8 text-gray-700 dark:text-gray-200" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </span>
         </button>
-        <span class="hidden md:inline text-sm text-gray-700 dark:text-gray-200">{{ authStore.user?.name || authStore.user?.email }}（管理者）</span>
-      </div>
-      <!-- ドロワーメニュー（モバイル） -->
-      <transition name="fade">
-        <nav v-if="menuOpen" class="md:hidden bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-4 py-4">
-          <div class="mb-2 font-bold text-gray-700 dark:text-gray-200">ユーザー選択</div>
-          <ul>
-            <li v-for="user in users" :key="user.id" class="mb-1">
-              <button @click="selectUser(user); menuOpen = false" class="w-full text-left px-2 py-1 rounded hover:bg-indigo-100 dark:hover:bg-indigo-900" :class="selectedUser?.id === user.id ? 'bg-indigo-200 dark:bg-indigo-800 font-bold' : ''">
-                {{ user.name || user.email }}
-              </button>
-            </li>
-          </ul>
-          <div v-if="selectedUser" class="mt-4">
-            <div class="mb-2 font-bold text-gray-700 dark:text-gray-200">月選択</div>
-            <ul class="flex flex-wrap gap-2">
-              <li v-for="m in userMonths" :key="m">
-                <button @click="selectMonth(m); menuOpen = false" class="px-3 py-1 rounded bg-gray-100 dark:bg-gray-700 hover:bg-indigo-200 dark:hover:bg-indigo-600 text-sm font-medium" :class="selectedMonth === m ? 'bg-indigo-300 dark:bg-indigo-800 font-bold' : ''">
-                  {{ m }}
-                </button>
-              </li>
-            </ul>
-          </div>
-          <div v-if="selectedMonthClocks.length" class="mt-4">
-            <div class="flex items-center mb-2">
-              <span class="font-semibold text-gray-700 dark:text-gray-200">{{ selectedMonth }}の打刻一覧</span>
-              <button @click="exportPDF" class="ml-2 px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-xs">PDFエクスポート</button>
-            </div>
-            <div class="overflow-x-auto">
-              <table class="min-w-full text-xs divide-y divide-gray-200 dark:divide-gray-700">
-                <thead>
-                  <tr>
-                    <th class="px-2 py-1 text-left">日付</th>
-                    <th class="px-2 py-1 text-left">出勤</th>
-                    <th class="px-2 py-1 text-left">退勤</th>
-                    <th class="px-2 py-1 text-left">備考</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="clock in selectedMonthClocks" :key="clock.id">
-                    <td class="px-2 py-1">{{ formatDate(clock.clockIn) }}</td>
-                    <td class="px-2 py-1">{{ formatTime(clock.clockIn) }}</td>
-                    <td class="px-2 py-1">{{ clock.clockOut ? formatTime(clock.clockOut) : '未退勤' }}</td>
-                    <td class="px-2 py-1">{{ clock.note || '' }}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </nav>
-      </transition>
-    </header>
+      </template>
+    </Header>
     <main class="max-w-7xl mx-auto py-6 sm:px-2 lg:px-8">
       <div class="px-2 py-4 sm:px-0">
         <!-- PC用サイドメニュー -->
-        <aside class="hidden md:block float-left w-full max-w-xs mr-6">
-          <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-4 mb-6">
+        <aside v-if="menuOpen" class="fixed top-16 right-0 w-72 h-full bg-white dark:bg-gray-800 shadow-lg z-40 transition-transform duration-200">
+          <div class="p-4">
             <div class="mb-2 font-bold text-gray-700 dark:text-gray-200">ユーザー選択</div>
             <ul>
               <li v-for="user in users" :key="user.id" class="mb-1">
@@ -95,10 +45,36 @@
                 </li>
               </ul>
             </div>
+            <div v-if="selectedMonthClocks.length" class="mt-4">
+              <div class="flex items-center mb-2">
+                <span class="font-semibold text-gray-700 dark:text-gray-200">{{ selectedMonth }}の打刻一覧</span>
+                <button @click="exportPDF" class="ml-2 px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-xs">PDFエクスポート</button>
+              </div>
+              <div class="overflow-x-auto">
+                <table class="min-w-full text-xs divide-y divide-gray-200 dark:divide-gray-700">
+                  <thead>
+                    <tr>
+                      <th class="px-2 py-1 text-left">日付</th>
+                      <th class="px-2 py-1 text-left">出勤</th>
+                      <th class="px-2 py-1 text-left">退勤</th>
+                      <th class="px-2 py-1 text-left">備考</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="clock in selectedMonthClocks" :key="clock.id">
+                      <td class="px-2 py-1">{{ formatDate(clock.clockIn) }}</td>
+                      <td class="px-2 py-1">{{ formatTime(clock.clockIn) }}</td>
+                      <td class="px-2 py-1">{{ clock.clockOut ? formatTime(clock.clockOut) : '未退勤' }}</td>
+                      <td class="px-2 py-1">{{ clock.note || '' }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         </aside>
         <!-- メイン表示エリア -->
-        <section :class="['bg-white dark:bg-gray-800 shadow rounded-lg p-4 mb-6', 'md:ml-72']">
+        <section :class="['bg-white dark:bg-gray-800 shadow rounded-lg p-4 mb-6', menuOpen ? 'md:mr-80' : '']">
           <h2 class="text-lg font-bold mb-2 dark:text-gray-100">{{ selectedUser ? (selectedUser.name || selectedUser.email) + ' の打刻履歴' : 'ユーザーを選択してください' }}</h2>
           <div v-if="selectedMonthClocks.length">
             <div class="flex items-center mb-2 flex-wrap gap-2">
@@ -135,6 +111,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import Header from '@/components/Header.vue'
 import { useAuth } from '@/composables/useAuth'
 import jsPDF from 'jspdf'
 import 'jspdf-autotable'
@@ -205,8 +182,14 @@ const formatMonth = (dateStr: string) => {
 
 const exportPDF = () => {
   if (!selectedMonthClocks.value.length) return
-  const doc = new jsPDF()
-  doc.text(`${selectedUser.value?.name || selectedUser.value?.email} ${selectedMonth.value}の打刻一覧`, 10, 10)
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
+  // タイトル
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(14)
+  doc.text(`${selectedUser.value?.name || selectedUser.value?.email} ${selectedMonth.value}の打刻一覧`, 10, 15)
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(10)
+  // テーブルデータ
   const rows = selectedMonthClocks.value.map((c: any) => [
     formatDate(c.clockIn),
     formatTime(c.clockIn),
@@ -216,11 +199,27 @@ const exportPDF = () => {
   ;(doc as any).autoTable({
     head: [['日付', '出勤', '退勤', '備考']],
     body: rows,
-    startY: 20,
+    startY: 22,
     styles: { font: 'helvetica', fontSize: 10 },
-    headStyles: { fillColor: [41, 128, 185] },
+    headStyles: { fillColor: [41, 128, 185], textColor: 255 },
+    bodyStyles: { textColor: 20 },
+    margin: { left: 10, right: 10 },
+    tableWidth: 'auto',
+    didDrawPage: (data: any) => {
+      // ページ番号
+      const pageCount = doc.getNumberOfPages()
+      doc.setFontSize(8)
+      doc.text(`Page ${data.pageNumber} / ${pageCount}`, 200, 287, { align: 'right' })
+    }
   })
-  doc.save(`${selectedUser.value?.name || selectedUser.value?.email}_${selectedMonth.value}_打刻一覧.pdf`)
+  // ファイル名例: yamada_2024-07_打刻一覧.pdf
+  const fileName = `${selectedUser.value?.name || selectedUser.value?.email}_${selectedMonth.value}_打刻一覧.pdf`
+  doc.save(fileName)
+}
+
+const handleLogout = async () => {
+  await authStore.logout()
+  await router.push('/login')
 }
 
 onMounted(() => {
