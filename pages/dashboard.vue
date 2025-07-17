@@ -266,11 +266,6 @@ const handleClockOut = async () => {
   }
 }
 
-const handleLogout = async () => {
-  await authStore.logout()
-  await router.push('/login')
-}
-
 // 時刻更新のタイマー
 onMounted(() => {
   updateTime()
@@ -281,6 +276,8 @@ onMounted(() => {
 onMounted(() => {
   if (!authStore.isAuthenticated) {
     router.push('/login')
+  } else if (authStore.user?.email === 'admin@example.com') {
+    router.push('/admin/dashboard')
   }
 })
 
