@@ -95,3 +95,40 @@ bun run preview
 ```
 
 Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+
+## テスト実行
+
+本プロジェクトではVitestによる自動テスト・カバレッジ計測を簡単に実行できるシェルスクリプト `test.sh` を用意しています。
+
+### 使い方
+
+1. ルートディレクトリで以下を実行してください。
+
+   ```bash
+   ./test.sh
+   ```
+
+2. メニューが表示されるので、番号を入力するだけで各種テストやカバレッジ計測、レポート表示が可能です。
+
+### メニュー例
+
+```
+==============================
+ Vitest テスト実行メニュー
+==============================
+1) 全テスト実行 (pnpm vitest run)
+2) カバレッジ付き全テスト (pnpm vitest run --coverage)
+3) UIモード (pnpm vitest --ui)
+4) ウォッチモード (pnpm vitest --watch)
+5) componentsのみ (pnpm vitest run tests/components)
+6) APIのみ (pnpm vitest run tests/server/api)
+7) composablesのみ (pnpm vitest run tests/composables)
+8) storesのみ (pnpm vitest run tests/stores)
+9) カバレッジレポートをHTMLで開く (coverage/index.html)
+0) 終了
+==============================
+番号を選択してください: 
+```
+
+- カバレッジレポート（HTML）は `2` で生成後、`9` でブラウザ表示できます。
+- テスト実行時はpnpm環境が必要です。
