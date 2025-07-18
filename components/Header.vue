@@ -20,7 +20,9 @@
 <script setup lang="ts">
 
 import { ref } from 'vue'
-import type { PropType } from 'vue'
+// import type { PropType } from 'vue'
+import { useAuthStore } from '../stores/auth'
+import { useRouter } from '#imports'
 
 const props = defineProps({
   show: { type: Boolean, default: true },
@@ -28,20 +30,20 @@ const props = defineProps({
   showMenu: { type: Boolean, default: false },
   userInfo: { type: String, default: '' },
   menuOpen: { type: Boolean, default: false },
-  onMenuClick: { type: Function as PropType<(e: MouseEvent) => void>, default: undefined },
+  // onMenuClick: { type: Function as PropType<(e: MouseEvent) => void>, default: undefined },
 })
 
 const authStore = useAuthStore()
 const router = useRouter()
 const menuOpen = ref(false)
 
-const handleMenuClick = (e: MouseEvent) => {
-  if (props.onMenuClick) {
-    props.onMenuClick(e)
-  } else {
-    menuOpen.value = !menuOpen.value
-  }
-}
+// const handleMenuClick = (e: MouseEvent) => {
+//   if (props.onMenuClick) {
+//     props.onMenuClick(e)
+//   } else {
+//     menuOpen.value = !menuOpen.value
+//   }
+// }
 
 const handleLogout = async () => {
   await authStore.logout()

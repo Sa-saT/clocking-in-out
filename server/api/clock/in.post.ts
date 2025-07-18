@@ -1,7 +1,9 @@
+import { createError, readBody as h3ReadBody } from 'h3'
 import prisma from '@/lib/prisma'
 
-export default defineEventHandler(async (event) => {
-  const body = await readBody(event)
+export async function clockInHandler(event: any, opts?: { readBodyImpl?: typeof h3ReadBody }) {
+  const _readBody = opts?.readBodyImpl || h3ReadBody
+  const body = await _readBody(event)
   const { userId } = body as { userId: number }
   if (!userId) {
     throw createError({ statusCode: 400, message: 'userIdは必須です' })
@@ -45,4 +47,6 @@ export default defineEventHandler(async (event) => {
     },
   })
   return { success: true, clock }
-}) 
+}
+
+// export default defineEventHandler(clockInHandler) 

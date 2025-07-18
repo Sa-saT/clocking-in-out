@@ -1,3 +1,5 @@
+import { computed } from 'vue'
+
 export const useThreeJS = () => {
   let scene: any = null
   let camera: any = null

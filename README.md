@@ -132,3 +132,21 @@ Check out the [deployment documentation](https://nuxt.com/docs/getting-started/d
 
 - カバレッジレポート（HTML）は `2` で生成後、`9` でブラウザ表示できます。
 - テスト実行時はpnpm環境が必要です。
+
+## TypeScript設定ファイル(tsconfig.json)のコメントについて
+
+- `tsconfig.json` では一部設定行を `//` でコメントアウトしています。
+- 本来JSON仕様ではコメント不可ですが、VSCodeやNuxt 3の開発環境では `tsconfig.json` のコメントが許容されています。
+- 公式ドキュメントや多くの現場でも、設定の意図や一時的な無効化のために `//` コメントが使われています。
+- ただし、他のツールや一部エディタではエラーになる場合があるため、CI/CDや他環境で利用する際はご注意ください。
+
+例：
+```json
+{
+  // https://nuxt.com/docs/guide/concepts/typescript
+  // "extends": "./.nuxt/tsconfig.json",
+  "compilerOptions": {
+    "skipLibCheck": true
+  }
+}
+```

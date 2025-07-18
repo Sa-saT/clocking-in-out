@@ -100,8 +100,11 @@
 </template>
   
   <script setup lang="ts">
-  import { ref, computed, onMounted } from 'vue'
-  import { useAuth } from '@/composables/useAuth'
+  import { ref, onMounted } from 'vue'
+  import { useAuth } from '../composables/useAuth'
+
+  import { useAuthStore } from '../stores/auth'
+  import { useRouter } from '#imports'
   // --- メニューバー・ヘッダー関連 ---
   
   const authStore = useAuthStore()
