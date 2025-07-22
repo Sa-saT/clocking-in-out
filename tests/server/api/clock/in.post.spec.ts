@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { clockInHandler } from './in.post'
+import { clockInHandler } from '../../../../server/api/clock/clockInHandler'
 
 describe('POST /api/clock/in', () => {
   const mockReadBody = (event: any) => event._body ?? {}
