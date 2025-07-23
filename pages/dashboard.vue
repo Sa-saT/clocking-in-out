@@ -199,10 +199,10 @@
 </template>
 
 <script setup lang="ts">
-import { useApi } from '@/composables/useApi'
-import BackButton from '@/components/icon/BackButton.vue'
-import ArrowDownButton from '@/components/icon/ArrowDownButton.vue'
-import ArrowUpButton from '@/components/icon/ArrowUpButton.vue'
+import { useAuthStore } from '../stores/auth'
+import { useRouter } from '#imports'
+import { ref, computed, onMounted, watchEffect } from 'vue'
+import { useApi } from '../composables/useApi'
 
 const authStore = useAuthStore()
 const router = useRouter()

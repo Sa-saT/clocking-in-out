@@ -8,13 +8,20 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted } from 'vue'
+import { useAuthStore } from '../stores/auth'
+import { useRouter } from '#imports'
+
 const authStore = useAuthStore()
 const router = useRouter()
 
 onMounted(() => {
-  // 認証状態に応じてリダイレクト
   if (authStore.isAuthenticated) {
-    router.push('/dashboard')
+    if (authStore.user?.email === 'admin@example.com') {
+      router.push('/admin/dashboard')
+    } else {
+      router.push('/dashboard')
+    }
   } else {
     router.push('/login')
   }
