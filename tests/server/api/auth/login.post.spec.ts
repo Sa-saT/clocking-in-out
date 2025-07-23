@@ -40,7 +40,24 @@ describe('login.post.ts', () => {
     expect(jwtSignMock).toHaveBeenCalled()
   })
 
-  it('バリデーション: email/password未入力で400エラー', async () => {
+  it('JWT発行時の引数が正しい', async () => {
+    prismaMock.user.findUnique.mockResolvedValue({ ...mockUser })
+    readBodyMock.mockResolvedValue({ email: mockUser.email, password: mockUser.password })
+    const event = makeEvent({})
+    await loginHandler(event, {
+      prismaImpl: prismaMock as any,
+      jwtSignImpl: jwtSignMock,
+      createErrorImpl: createErrorMock,
+      readBodyImpl: readBodyMock
+    })
+    expect(jwtSignMock).toHaveBeenCalledWith(
+      { sub: mockUser.id, email: mockUser.email, name: mockUser.name },
+      expect.any(String),
+      { expiresIn: '1d' }
+    )
+  })
+
+  it('バリデーションエラー時にcreateErrorImplが呼ばれる', async () => {
     readBodyMock.mockResolvedValue({ email: '', password: '' })
     const event = makeEvent({})
     await expect(loginHandler(event, {
@@ -48,7 +65,21 @@ describe('login.post.ts', () => {
       jwtSignImpl: jwtSignMock,
       createErrorImpl: createErrorMock,
       readBodyImpl: readBodyMock
-    })).rejects.toThrow('メールアドレスとパスワードは必須です')
+    })).rejects.toThrow()
+    expect(createErrorMock).toHaveBeenCalledWith({ statusCode: 400, message: expect.any(String) })
+  })
+
+  it('readBodyImplが必ず呼ばれる', async () => {
+    prismaMock.user.findUnique.mockResolvedValue({ ...mockUser })
+    readBodyMock.mockResolvedValue({ email: mockUser.email, password: mockUser.password })
+    const event = makeEvent({})
+    await loginHandler(event, {
+      prismaImpl: prismaMock as any,
+      jwtSignImpl: jwtSignMock,
+      createErrorImpl: createErrorMock,
+      readBodyImpl: readBodyMock
+    })
+    expect(readBodyMock).toHaveBeenCalled()
   })
 
   it('認証失敗: ユーザーが存在しない場合401エラー', async () => {

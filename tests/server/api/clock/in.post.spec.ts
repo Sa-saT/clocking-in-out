@@ -1,35 +1,44 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest'
+
+// prismaのimportをESMモック（ファクトリー関数内でmockPrismaを定義）
+const fixedDate = new Date('2023-01-01T09:00:00Z')
+vi.mock('@/lib/prisma', () => {
+  const mockPrisma = {
+    clock: {
+      updateMany: vi.fn(),
+      findFirst: vi.fn(() => null),
+      create: vi.fn(() => ({ id: 1, userId: 1, clockIn: fixedDate }))
+    }
+  }
+  return {
+    __esModule: true,
+    default: mockPrisma
+  }
+})
+
 import { clockInHandler } from '../../../../server/api/clock/clockInHandler'
 
 describe('POST /api/clock/in', () => {
   const mockReadBody = (event: any) => event._body ?? {}
 
   beforeEach(() => {
-    // prismaのモック
-    vi.stubGlobal('prisma', {
-      clock: {
-        updateMany: vi.fn(),
-        findFirst: vi.fn(() => null),
-        create: vi.fn(() => ({ id: 1, userId: 1, clockIn: new Date() }))
-      }
-    })
-    // createErrorのモック
-    vi.stubGlobal('createError', ({ statusCode, message }: { statusCode: number; message: string }) => {
-      const err = new Error(message) as Error & { statusCode: number }
-      err.statusCode = statusCode
-      return err
-    })
+    vi.useFakeTimers()
+    vi.setSystemTime(fixedDate)
+  })
+  afterEach(() => {
+    vi.useRealTimers()
   })
 
   it('userIdが無い場合400エラー', async () => {
-    const event = { _body: {}, context: {} } as any
-    await expect(clockInHandler(event, { readBodyImpl: mockReadBody })).rejects.toThrow('userIdは必須です')
+    const event = { _body: {}, context: {} }
+    await expect(clockInHandler(event, { readBodyImpl: mockReadBody })).rejects.toThrowError('userIdは必須です')
   })
 
   it('正常時はsuccessとclockを返す', async () => {
-    const event = { _body: { userId: 1 }, context: {} } as any
+    const event = { _body: { userId: 1 }, context: {} }
     const result = await clockInHandler(event, { readBodyImpl: mockReadBody })
     expect(result.success).toBe(true)
-    expect(result.clock).toBeTruthy()
+    expect(result.clock).toBeDefined()
+    expect(result.clock.userId).toBe(1)
   })
 }) 
