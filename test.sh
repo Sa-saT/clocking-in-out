@@ -19,6 +19,7 @@ function show_menu() {
   echo "7) composablesのみ (pnpm vitest run tests/composables)"
   echo "8) storesのみ (pnpm vitest run tests/stores)"
   echo "9) カバレッジレポートをHTMLで開く (coverage/index.html)"
+  echo "10) カバレッジ付き全テスト＋HTMLレポートを自動表示"
   echo "0) 終了"
   echo "=============================="
   echo -n "番号を選択してください: "
@@ -57,6 +58,14 @@ while true; do
         open coverage/index.html
       else
         echo "coverage/index.html が存在しません。まずカバレッジ付きテストを実行してください。"
+      fi
+      ;;
+    10)
+      pnpm vitest run --coverage && \
+      if [ -f coverage/index.html ]; then
+        open coverage/index.html
+      else
+        echo "coverage/index.html が存在しません。"
       fi
       ;;
     0)

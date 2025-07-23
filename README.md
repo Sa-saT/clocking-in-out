@@ -133,6 +133,11 @@ Check out the [deployment documentation](https://nuxt.com/docs/getting-started/d
 - カバレッジレポート（HTML）は `2` で生成後、`9` でブラウザ表示できます。
 - テスト実行時はpnpm環境が必要です。
 
+## CIカバレッジレポートの確認方法
+
+- GitHub Actions（CI）でテスト・カバレッジ実行時、`coverage/`ディレクトリがアーティファクトとして保存されます。
+- Actions画面の該当ジョブから「coverage-report」アーティファクトをダウンロードし、`index.html`をローカルで開くことでカバレッジの詳細を確認できます。
+
 ## TypeScript設定ファイル(tsconfig.json)のコメントについて
 
 - `tsconfig.json` では一部設定行を `//` でコメントアウトしています。
@@ -150,3 +155,7 @@ Check out the [deployment documentation](https://nuxt.com/docs/getting-started/d
   }
 }
 ```
+
+## テストカバレッジ方針
+
+- 本プロジェクトはテストカバレッジ80%以上を維持しています（バッジ画像は貼りません）。

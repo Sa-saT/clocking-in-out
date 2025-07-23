@@ -1,28 +1,25 @@
 import { defineConfig } from 'vitest/config'
-import path from 'path'
 import vue from '@vitejs/plugin-vue'
 
 export default defineConfig({
+  plugins: [vue()],
   test: {
-    environment: 'happy-dom',
-    globals: true,
-    include: [
-      'composables/**/*.spec.ts',
-      'stores/**/*.spec.ts',
-      'components/**/*.spec.{ts,js,tsx,jsx}',
-      'server/api/**/*.spec.ts',
-      'tests/**/*.spec.ts'
-    ],
+    environment: 'jsdom',
     coverage: {
       provider: 'v8',
-      reporter: ['text', 'html'],
-      reportsDirectory: './coverage'
+      reporter: ['text', 'html', 'lcov'],
+      thresholds: {
+        lines: 80,
+        functions: 80,
+        branches: 80,
+        statements: 80,
+      }
     }
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, '.')
-    }
+      '@': '/Users/sasata/Documents/work_space/clocking-in-out_APP',
+      '#imports': '/tests/__mocks__/nuxt-imports-mock.ts',
+    },
   },
-  plugins: [vue()]
 }) 
