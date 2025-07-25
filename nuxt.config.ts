@@ -38,7 +38,6 @@ export default defineNuxtConfig({
     build: {
       rollupOptions: {
         external: [
-          /^\.prisma/,
           '@prisma/client',
         ],
       },
