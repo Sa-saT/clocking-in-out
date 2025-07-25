@@ -2,6 +2,8 @@ import tailwindcss from '@tailwindcss/vite'
 import { defineNuxtConfig } from 'nuxt/config'
 import { resolve } from 'path'
 
+const prismaPath = resolve(__dirname, 'node_modules/@prisma/client')
+
 export default defineNuxtConfig({
   compatibilityDate: '2025-05-15',
   devtools: {
@@ -23,6 +25,9 @@ export default defineNuxtConfig({
     plugins: [
       tailwindcss(),
     ],
+    resolve: {
+      preserveSymlinks: false, // Symlink解決を安定化
+    },
     ssr: {
       noExternal: ['@prisma/client'],
     },
@@ -34,8 +39,8 @@ export default defineNuxtConfig({
     transpile: ['@prisma/client'],
   },
   alias: {
-    '.prisma/client':
-    resolve(__dirname, 'node_modules/@prisma/client'),
+    '.prisma/client': prismaPath,
+    '@prisma/client': prismaPath,
   },
   components: [
     {
