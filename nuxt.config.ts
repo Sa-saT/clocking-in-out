@@ -1,4 +1,4 @@
-import tailwindcss from "@tailwindcss/vite";
+import tailwindcss from '@tailwindcss/vite'
 import { defineNuxtConfig } from 'nuxt/config'
 import { resolve } from 'path'
 
@@ -23,13 +23,16 @@ export default defineNuxtConfig({
     plugins: [
       tailwindcss(),
     ],
+    ssr: {
+      noExternal: ['@prisma/client'],
+    },
   },
   build: {
     transpile: ['@prisma/client'],
   },
   alias: {
-    '.prisma/client/index-browser':
-    resolve(__dirname,'/node_modules/@prisma/client/index-browser.js'),
+    '.prisma/client':
+    resolve(__dirname, 'node_modules/@prisma/client'),
   },
   components: [
     {
