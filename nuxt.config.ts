@@ -26,6 +26,9 @@ export default defineNuxtConfig({
     ssr: {
       noExternal: ['@prisma/client'],
     },
+    build: {
+      sourcemap: true, // ソースマップを有効にする
+    },
   },
   build: {
     transpile: ['@prisma/client'],
