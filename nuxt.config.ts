@@ -35,11 +35,6 @@ export default defineNuxtConfig({
     plugins: [
       tailwindcss(),
     ],
-    resolve: {
-      alias: prismaClientIndexBrowser
-        ? { '.prisma/client/index-browser': path.relative(__dirname, prismaClientIndexBrowser) }
-        : {},
-    },
   },
   build: {
     transpile: ['@prisma/client'],
