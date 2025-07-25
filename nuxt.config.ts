@@ -30,6 +30,9 @@ export default defineNuxtConfig({
       },
     },
   },
+  build: {
+    transpile: ['@prisma/client'],
+  },
   components: [
     {
       path: '~/components',
