@@ -11,7 +11,8 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "prebuild": "prisma generate",
-    "postinstall": "nuxt prepare && prisma generate"
+    "postinstall": "nuxt prepare && prisma generate",
+    "vercel-build": "./vercel-build.sh"
   },
   "dependencies": {
     "@nuxt/fonts": "0.11.4",
