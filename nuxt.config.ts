@@ -35,6 +35,14 @@ export default defineNuxtConfig({
     plugins: [
       tailwindcss(),
     ],
+    build: {
+      rollupOptions: {
+        external: [
+          /^\.prisma/,
+          '@prisma/client',
+        ],
+      },
+    },
   },
   build: {
     transpile: ['@prisma/client'],
