@@ -16,6 +16,7 @@ model User {
   password  String?
   name     String?
   clocks   Clock[]
+  auth_uid String? @db.Uuid @unique // Supabase Authのuidを格納
 }
 
 model Clock {
