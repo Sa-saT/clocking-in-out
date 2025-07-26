@@ -1,8 +1,8 @@
 import tailwindcss from '@tailwindcss/vite'
 import { defineNuxtConfig } from 'nuxt/config'
-import { resolve } from 'path'
+// import { resolve } from 'path'
 
-const prismaPath = resolve(__dirname, 'node_modules/@prisma/client')
+// const prismaPath = resolve(__dirname, 'node_modules/@prisma/client/edge')
 
 export default defineNuxtConfig({
   compatibilityDate: '2025-05-15',
@@ -26,23 +26,22 @@ export default defineNuxtConfig({
     plugins: [
       tailwindcss(),
     ],
-    resolve: {
-      preserveSymlinks: false, // Symlink解決を安定化
-    },
-    ssr: {
-      noExternal: ['@prisma/client'],
-    },
-    build: {
-      sourcemap: true, // ソースマップを有効にする
-    },
+    // resolve: {
+    //   preserveSymlinks: false, // Symlink解決を安定化
+    // },
+    // ssr: {
+    //   noExternal: ['@prisma/client'],
+    // },
+    // build: {
+    //   sourcemap: true, // ソースマップを有効にする
+    // },
   },
   build: {
     transpile: ['@prisma/client'],
   },
-  alias: {
-    '.prisma/client': prismaPath,
-    '@prisma/client': prismaPath,
-  },
+  // alias: {
+  //   '@prisma/client/edge': prismaPath
+  // },
   components: [
     {
       path: '~/components',
