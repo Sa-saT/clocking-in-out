@@ -16,7 +16,11 @@ const authStore = useAuthStore()
 const router = useRouter()
 
 onMounted(() => {
-  if (authStore.isAuthenticated) {
+  // セッションからユーザー情報を復元
+  authStore.restoreUserFromSession()
+  
+  // 認証状態に基づいて画面遷移
+  if (authStore.isAuthenticated && authStore.user?.token) {
     if (authStore.user?.email === 'admin@example.com') {
       router.push('/admin/dashboard')
     } else {

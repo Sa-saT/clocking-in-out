@@ -3,7 +3,7 @@
 # 出退勤管理アプリ（Nuxt3 + JWT認証）
 
 ## 概要
-- Nuxt3 + TypeScript + Prisma + PostgreSQL による従業員の出退勤管理アプリです。
+- Nuxt3 + TypeScript + PostgreSQL による従業員の出退勤管理アプリです。
 - 認証方式は**JWT（JSON Web Token）**を採用し、APIはすべてJWTによる認証・保護が必須です。
 - クライアント側ではPiniaストア＋SessionStorageで認証状態・トークンを管理し、リロードやタブ再読み込みでも認証状態を維持します。
 - APIリクエスト時は自動でAuthorizationヘッダーにJWTを付与します。
@@ -12,7 +12,7 @@
 
 ## 主な技術・設計方針
 - Nuxt3（Composition API, <script setup>）
-- TypeScript/Prisma/PostgreSQL
+- TypeScript/PostgreSQL
 - Pinia（状態管理）
 - Tailwind CSS（UI）
 - JWT認証（jsonwebtoken）

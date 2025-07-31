@@ -17,7 +17,8 @@ async function $authFetch<T>(url: string, options: any = {}): Promise<T> {
   if (token) {
     headers['Authorization'] = `Bearer ${token}`
   }
-  return await $fetch<T>(url, { ...options, headers })
+  const response = await $fetch<T>(url, { ...options, headers })
+  return response as T
 }
 
 export const useAuth = () => {

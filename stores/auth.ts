@@ -73,6 +73,7 @@ export const useAuthStore = defineStore('auth', {
 })
 
 // ストア初期化時にSessionStorageから復元
+// プラグインで初期化するため、ここではコメントアウト
 // if (typeof window !== 'undefined') {
 //   const store = useAuthStore()
 //   store.restoreUserFromSession()

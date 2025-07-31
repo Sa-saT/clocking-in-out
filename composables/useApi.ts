@@ -80,12 +80,13 @@ export const useApi = () => {
    * 認証不要のAPI呼び出し
    */
   const fetchPublic = async <T>(url: string, options: ApiOptions = {}): Promise<T> => {
-    return await $fetch<T>(url, {
+    const result = await $fetch<T>(url, {
       method: options.method || 'GET',
       body: options.body,
       headers: options.headers,
       ...options
     })
+    return result as T
   }
 
   return {

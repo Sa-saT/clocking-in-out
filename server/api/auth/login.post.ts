@@ -1,55 +1,82 @@
-import { PrismaClient } from '@prisma/client'
 import * as jwt from 'jsonwebtoken'
 import { readBody, defineEventHandler } from 'h3'
+import { supabase } from '@/lib/supabase'
+import bcrypt from 'bcryptjs'
 
-const prisma = new PrismaClient()
-const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret_key'
+const config = useRuntimeConfig()
+const JWT_SECRET = config.jwtSecret
 
 function getJwtSign() {
-  // ESM/CJS両対応
   return (jwt as any).default?.sign || jwt.sign
 }
 
 export async function loginHandler(event: any, opts?: {
-  prismaImpl?: typeof prisma,
+  supabaseImpl?: typeof supabase,
   jwtSignImpl?: (...args: any[]) => string,
   createErrorImpl?: (obj: any) => Error,
   readBodyImpl?: (event: any) => Promise<any>
 }) {
-  const _prisma = opts?.prismaImpl || prisma
+  const _supabase = opts?.supabaseImpl || supabase
   const _createError = opts?.createErrorImpl || ((obj: any) => { throw new Error(obj.message) })
   const _readBody = opts?.readBodyImpl || (async (event: any) => await readBody(event))
   const _jwtSign = opts && opts.jwtSignImpl ? opts.jwtSignImpl : getJwtSign()
 
-  // デバッグ: _jwtSignがmockかどうか出力
-  if (typeof _jwtSign === 'function' && _jwtSign.name === 'mockConstructor') {
-    // vitestのmock関数
-    // eslint-disable-next-line no-console
-    console.log('jwtSignImpl is vitest mock')
-  } else {
-    // eslint-disable-next-line no-console
-    console.log('jwtSignImpl is not mock:', _jwtSign)
-  }
-
   const body = await _readBody(event)
   const { email, password } = body as { email: string; password: string }
+
+  console.log('🔍 Login attempt:', { email, password: password ? '***' : 'undefined' })
 
   if (!email || !password) {
     throw _createError({ statusCode: 400, message: 'メールアドレスとパスワードは必須です' })
   }
 
-  // ユーザー検索（nameも取得）
-  const user = await _prisma.user.findUnique({
-    where: { email },
-    select: { id: true, email: true, password: true, name: true },
+  // ユーザー検索
+  console.log('🔍 Searching for user:', email)
+                const { data: user, error } = await _supabase
+                .from('User')
+                .select('id, email, password, name')
+                .eq('email', email)
+                .single()
+
+  console.log('🔍 Database response:', { 
+    userFound: !!user, 
+    error: error?.message || null,
+    userEmail: user?.email,
+    userPassword: user?.password ? '***' : 'undefined'
   })
-  if (!user || user.password !== password) {
+
+  if (error) {
+    console.log('❌ Database error:', error)
     throw _createError({ statusCode: 401, message: 'メールアドレスまたはパスワードが正しくありません' })
   }
 
+  if (!user) {
+    console.log('❌ User not found')
+    throw _createError({ statusCode: 401, message: 'メールアドレスまたはパスワードが正しくありません' })
+  }
+
+  console.log('🔍 Password comparison:', { 
+    providedPassword: password, 
+    storedPassword: user.password ? '***' : 'undefined',
+    hasStoredPassword: !!user.password
+  })
+
+  if (!user.password) {
+    console.log('❌ No stored password')
+    throw _createError({ statusCode: 401, message: 'メールアドレスまたはパスワードが正しくありません' })
+  }
+
+                const passwordMatch = await bcrypt.compare(password, user.password)
+              console.log('🔍 bcrypt comparison result:', passwordMatch)
+
+  if (!passwordMatch) {
+    console.log('❌ Password mismatch')
+    throw _createError({ statusCode: 401, message: 'メールアドレスまたはパスワードが正しくありません' })
+  }
+
+  console.log('✅ Login successful for user:', user.email)
+
   // JWT発行
-  // eslint-disable-next-line no-console
-  console.log('jwtSign call args:', { sub: user.id, email: user.email, name: user.name }, JWT_SECRET, { expiresIn: '1d' })
   const token = _jwtSign(
     { sub: user.id, email: user.email, name: user.name },
     JWT_SECRET,

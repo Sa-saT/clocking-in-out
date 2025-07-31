@@ -21,8 +21,8 @@ logs
 # Local env files
 .env
 .env.*
-!.env.example
 
-/generated/prisma
-
+supabase_rls_policies.sql
+fix_rls_policies.sql
+check_rls_settings.sql
 0618portfolio.txt

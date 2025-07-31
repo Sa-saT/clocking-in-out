@@ -10,8 +10,7 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "prebuild": "prisma generate",
-    "postinstall": "nuxt prepare && prisma generate"
+    "postinstall": "nuxt prepare"
   },
   "dependencies": {
     "@nuxt/fonts": "0.11.4",
@@ -20,9 +19,8 @@
     "@nuxt/test-utils": "3.19.1",
     "@nuxtjs/tailwindcss": "7.0.0-beta.0",
     "@pinia/nuxt": "0.11.1",
-    "@prisma/nuxt": "^0.3.0",
+    "@supabase/supabase-js": "^2.52.1",
     "@tailwindcss/vite": "^4.1.10",
-    "@prisma/client": "5.15.1",
     "bcryptjs": "^3.0.2",
     "h3": "^1.15.3",
     "jsonwebtoken": "^9.0.2",
@@ -40,6 +38,7 @@
   "devDependencies": {
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/vue": "^8.1.0",
+    "@types/bcryptjs": "^3.0.0",
     "@types/jsonwebtoken": "^9.0.10",
     "@vitejs/plugin-vue": "^6.0.0",
     "@vitest/coverage-v8": "^3.2.4",
@@ -47,11 +46,7 @@
     "@vue/test-utils": "^2.4.6",
     "happy-dom": "^18.0.1",
     "jsdom": "^26.1.0",
-    "prisma": "5.15.1",
     "ts-node": "^10.9.2",
     "vitest": "^3.2.4"
-  },
-  "prisma": {
-    "seed": "node prisma/seed.js"
   }
 }
