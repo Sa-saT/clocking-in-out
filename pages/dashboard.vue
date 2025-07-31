@@ -283,21 +283,32 @@ onMounted(() => {
 
 function formatDate(dateStr: string) {
   const d = new Date(dateStr)
-  return d.toLocaleDateString('ja-JP')
+  // JST時刻として表示
+  return d.toLocaleDateString('ja-JP', { timeZone: 'Asia/Tokyo' })
 }
 function formatTime(dateStr: string) {
   const d = new Date(dateStr)
-  return d.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' })
+  // JST時刻として表示
+  return d.toLocaleTimeString('ja-JP', { 
+    hour: '2-digit', 
+    minute: '2-digit',
+    timeZone: 'Asia/Tokyo'
+  })
 }
 
 const currentStatus = computed(() => {
-  // 今日の打刻履歴を取得
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
+  // 今日の打刻履歴を取得（JST基準）
+  const now = new Date()
+  const jstOffset = 9 * 60
+  const utc = now.getTime() + (now.getTimezoneOffset() * 60000)
+  const jstToday = new Date(utc + (jstOffset * 60000))
+  jstToday.setHours(0, 0, 0, 0)
+  
   const todayClock = clocks.value.find((c: any) => {
     const d = new Date(c.clockIn)
-    d.setHours(0, 0, 0, 0)
-    return d.getTime() === today.getTime()
+    const jstD = new Date(d.getTime() + (9 * 60 * 60000))
+    jstD.setHours(0, 0, 0, 0)
+    return jstD.getTime() === jstToday.getTime()
   })
   if (!todayClock) {
     return '未出勤'

@@ -1,6 +1,15 @@
 import { readBody, defineEventHandler } from 'h3'
 import { supabase } from '@/lib/supabase'
 
+// 日本時間（JST）を取得する関数
+function getJSTDate(): string {
+  const now = new Date()
+  const jstOffset = 9 * 60 // JSTはUTC+9
+  const utc = now.getTime() + (now.getTimezoneOffset() * 60000)
+  const jst = new Date(utc + (jstOffset * 60000))
+  return jst.toISOString()
+}
+
 export async function clockInHandler(event: any, opts?: {
   supabaseImpl?: typeof supabase,
   createErrorImpl?: (obj: any) => Error,
@@ -20,17 +29,21 @@ export async function clockInHandler(event: any, opts?: {
     throw _createError({ statusCode: 400, message: 'userIdは必須です' })
   }
 
-  // 本日の出勤打刻が既に存在するかチェック
+  // 本日の出勤打刻が既に存在するかチェック（JST基準）
   const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  const tomorrow = new Date(today)
+  const jstOffset = 9 * 60
+  const utc = today.getTime() + (today.getTimezoneOffset() * 60000)
+  const jstToday = new Date(utc + (jstOffset * 60000))
+  jstToday.setHours(0, 0, 0, 0)
+  
+  const tomorrow = new Date(jstToday)
   tomorrow.setDate(tomorrow.getDate() + 1)
 
   const { data: existingClock, error: checkError } = await _supabase
     .from('Clock')
     .select('*')
     .eq('userId', userId)
-    .gte('clockIn', today.toISOString())
+    .gte('clockIn', jstToday.toISOString())
     .lt('clockIn', tomorrow.toISOString())
     .single()
 
@@ -42,12 +55,12 @@ export async function clockInHandler(event: any, opts?: {
     throw _createError({ statusCode: 400, message: '本日は既に出勤打刻済みです' })
   }
 
-  // 出勤打刻を記録
-const { data: clock, error: insertError } = await _supabase
+  // 出勤打刻を記録（JST時刻）
+  const { data: clock, error: insertError } = await _supabase
     .from('Clock')
     .insert({
       userId: userId,
-      clockIn: new Date().toISOString()
+      clockIn: getJSTDate()
     })
     .select()
     .single()
