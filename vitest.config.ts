@@ -14,7 +14,8 @@ export default defineConfig({
         branches: 80,
         statements: 80,
       }
-    }
+    },
+    setupFiles: ['./tests/setup.ts'],
   },
   resolve: {
     alias: {
@@ -25,5 +26,11 @@ export default defineConfig({
       '@@': '.',
       '@@/': './',
     },
+  },
+  define: {
+    'process.env.NODE_ENV': '"test"',
+  },
+  optimizeDeps: {
+    include: ['vue', 'pinia'],
   },
 }) 
