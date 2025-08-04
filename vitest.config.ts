@@ -18,8 +18,8 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': '/Users/sasata/Documents/work_space/clocking-in-out_APP',
-      '#imports': '/tests/__mocks__/nuxt-imports-mock.ts',
+      '@': '.',
+      '#imports': './tests/__mocks__/nuxt-imports-mock.ts',
     },
   },
 }) 
