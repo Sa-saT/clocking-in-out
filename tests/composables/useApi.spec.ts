@@ -17,8 +17,20 @@ describe('useApi', () => {
 
   beforeEach(() => {
     setActivePinia(createPinia())
-    mockUseFetch = vi.fn((url, opts) => ({ data: { value: 'fetched' }, url, opts: { ...opts, headers: opts.headers } }))
-    mockUseAsyncData = vi.fn((key, fetcher, opts) => ({ data: { value: 'async' }, key, opts }))
+    mockUseFetch = vi.fn((url, opts) => ({ 
+      data: { value: 'fetched' }, 
+      pending: { value: false },
+      error: { value: null },
+      refresh: vi.fn(),
+      execute: vi.fn()
+    }))
+    mockUseAsyncData = vi.fn((key, fetcher, opts) => ({ 
+      data: { value: 'async' }, 
+      pending: { value: false },
+      error: { value: null },
+      refresh: vi.fn(),
+      execute: vi.fn()
+    }))
     mock$fetch = vi.fn(async (url, opts) => ({ url, ...opts, headers: opts.headers }))
     vi.stubGlobal('useFetch', mockUseFetch)
     vi.stubGlobal('useAsyncData', mockUseAsyncData)
@@ -28,8 +40,12 @@ describe('useApi', () => {
   it('fetchWithSSR: 認証ヘッダーが付与される', () => {
     const { fetchWithSSR } = useApi()
     const res = fetchWithSSR('/api/test')
-    expect(res.url).toBe('/api/test')
-    expect(res.opts.headers.Authorization).toBe('Bearer test-token')
+    expect(res.data.value).toBe('fetched')
+    expect(mockUseFetch).toHaveBeenCalledWith('/api/test', expect.objectContaining({
+      headers: expect.objectContaining({
+        Authorization: 'Bearer test-token'
+      })
+    }))
   })
 
   it('fetch: $authFetchが呼ばれ、認証ヘッダーが付与される', async () => {
@@ -51,7 +67,7 @@ describe('useApi', () => {
   it('fetchAsync: useAsyncDataが呼ばれる', () => {
     const { fetchAsync } = useApi()
     const res = fetchAsync('key', async () => 'data')
-    expect(res.key).toBe('key')
     expect(res.data.value).toBe('async')
+    expect(mockUseAsyncData).toHaveBeenCalledWith('key', expect.any(Function), expect.any(Object))
   })
 }) 

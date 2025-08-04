@@ -5,7 +5,7 @@ vi.mock('nuxt/app', () => ({
 }))
 
 import { setActivePinia, createPinia } from 'pinia'
-import { useAuthStore } from '@/stores/auth'
+import { useAuthStore } from '../../stores/auth'
 import { describe, it, expect, beforeEach } from 'vitest'
 import adminOnly from '../../middleware/admin-only'
 

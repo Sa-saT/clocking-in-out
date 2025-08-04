@@ -5,9 +5,9 @@ import { setActivePinia, createPinia } from 'pinia'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 // Nuxt3 auto-importのuseRouter等をテスト用にモック
-vi.mock('#imports', () => ({
-  useRouter: () => ({ push: vi.fn(), replace: vi.fn(), go: vi.fn() })
-}))
+// vi.mock('#imports', () => ({
+//   useRouter: () => ({ push: vi.fn(), replace: vi.fn(), go: vi.fn() })
+// }))
 
 beforeEach(() => {
   setActivePinia(createPinia())
