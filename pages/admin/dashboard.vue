@@ -199,7 +199,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watchEffect } from 'vue'
 import { useAuthStore } from '../../stores/auth'
-import { useRouter, definePageMeta } from '#imports'
+
 import { useApi } from '../../composables/useApi'
 
 const authStore = useAuthStore()

@@ -200,7 +200,7 @@
 
 <script setup lang="ts">
 import { useAuthStore } from '../stores/auth'
-import { useRouter } from '#imports'
+
 import { ref, computed, onMounted, watchEffect } from 'vue'
 import { useApi } from '../composables/useApi'
 

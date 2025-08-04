@@ -19,7 +19,7 @@
 
 <script setup lang="ts">
 import { useAuthStore } from '../stores/auth'
-import { useRouter } from '#imports'
+
 
 const props = defineProps({
   show: { type: Boolean, default: true },
