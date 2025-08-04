@@ -2,7 +2,7 @@ import { defineConfig } from 'vitest/config'
 import vue from '@vitejs/plugin-vue'
 
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [vue()] as any,
   test: {
     environment: 'jsdom',
     coverage: {
@@ -20,6 +20,10 @@ export default defineConfig({
     alias: {
       '@': '.',
       '#imports': './tests/__mocks__/nuxt-imports-mock.ts',
+      '~': '.',
+      '~~': '.',
+      '@@': '.',
+      '@@/': './',
     },
   },
 }) 
