@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 
-vi.mock('@/stores/auth', () => ({
+vi.mock('../../stores/auth', () => ({
   useAuthStore: () => ({ user: { token: 'test-token' } })
 }))
 vi.mock('../../composables/useAuth', () => ({
