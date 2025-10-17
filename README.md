@@ -21,6 +21,11 @@
 - APP_SPEC.mdで仕様・タスク・ルールを一元管理
 
 ---
+## アプリ
+- 一般ユーザー（User）
+  - email: user1@example.com
+  - password: userpass1
+
 
 Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
 
@@ -58,7 +63,6 @@ Locally preview production build:
 
 ```bash
 
-# pnpm
 pnpm preview
 
 ```
