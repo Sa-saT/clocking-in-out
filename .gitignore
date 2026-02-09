@@ -13,6 +13,9 @@ node_modules
 logs
 *.log
 
+# Test coverage
+coverage/
+
 # Misc
 .DS_Store
 .fleet
@@ -26,3 +29,6 @@ supabase_rls_policies.sql
 fix_rls_policies.sql
 check_rls_settings.sql
 0618portfolio.txt
+repomix-output.xml
+.vercel
+.env*.local

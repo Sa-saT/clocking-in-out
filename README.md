@@ -2,6 +2,12 @@
 
 # 出退勤管理アプリ（Nuxt3 + JWT認証）
 
+## デプロイ・運用
+
+- **デプロイ**: GitHub Actions → Vercel
+- **DB**: Supabase（Free プラン）
+- Supabase が90日非アクティブで一時停止した場合の再構築手順: [docs/SUPABASE_REBUILD_VERCEL_SETUP.md](docs/SUPABASE_REBUILD_VERCEL_SETUP.md)
+
 ## 概要
 - Nuxt3 + TypeScript + PostgreSQL による従業員の出退勤管理アプリです。
 - 認証方式は**JWT（JSON Web Token）**を採用し、APIはすべてJWTによる認証・保護が必須です。

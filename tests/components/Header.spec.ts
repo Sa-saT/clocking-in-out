@@ -11,14 +11,13 @@ const mockPush = vi.fn()
 vi.mock('../../stores/auth', () => ({
   useAuthStore: () => ({ logout: mockLogout })
 }))
-vi.mock('#imports', () => ({
-  useRouter: () => ({ push: mockPush, replace: vi.fn(), go: vi.fn() })
-}))
 
 beforeEach(() => {
   setActivePinia(createPinia())
   mockLogout.mockClear()
   mockPush.mockClear()
+  // setup.ts の globalThis.useRouter を上書き（コンポーネントがグローバル参照するため）
+  vi.stubGlobal('useRouter', vi.fn(() => ({ push: mockPush, replace: vi.fn(), go: vi.fn() })))
 })
 
 describe('Header.vue', () => {

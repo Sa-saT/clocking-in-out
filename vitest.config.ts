@@ -1,5 +1,10 @@
 import { defineConfig } from 'vitest/config'
 import vue from '@vitejs/plugin-vue'
+import path from 'path'
+import { fileURLToPath } from 'url'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const root = path.resolve(__dirname, '.')
 
 export default defineConfig({
   plugins: [vue()] as any,
@@ -19,12 +24,12 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': '.',
-      '#imports': './tests/__mocks__/nuxt-imports-mock.ts',
-      '~': '.',
-      '~~': '.',
-      '@@': '.',
-      '@@/': './',
+      '@': root,
+      '#imports': path.resolve(root, 'tests/__mocks__/nuxt-imports-mock.ts'),
+      '~': root,
+      '~~': root,
+      '@@': root,
+      '@@/': root + '/',
     },
   },
   define: {
