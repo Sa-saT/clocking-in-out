@@ -6,7 +6,8 @@
 
 - **デプロイ**: GitHub Actions → Vercel
 - **DB**: Supabase（Free プラン）
-- Supabase が90日非アクティブで一時停止した場合の再構築手順: [docs/SUPABASE_REBUILD_VERCEL_SETUP.md](docs/SUPABASE_REBUILD_VERCEL_SETUP.md)
+- Supabase が90日非アクティブで一時停止した場合の再構築手順:[docs/SUPABASE_REBUILD_VERCEL_SETUP.md]
+- Supabase をローカルで起動して確認する手順:[docs/SUPABASE_LOCAL_SETUP.md]
 
 ## 概要
 - Nuxt3 + TypeScript + PostgreSQL による従業員の出退勤管理アプリです。
